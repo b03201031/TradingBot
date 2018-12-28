@@ -20,7 +20,7 @@ class OKCoinSpot(HttpHelper):
 		'''
 	def ticker(self):
 		pair = self._order_config['Pair']
-		print(self._order_config['Pair'])
+		#print(self._order_config['Pair'])
 		PATH = "/api/spot/v3/instruments/{}/ticker".format(pair)
 
 		return self.httpGet(PATH)
@@ -139,7 +139,6 @@ class OKCoinFuture(HttpHelper):
 		return self.httpGet(PATH)
 	#side, option, fiat_amount, (price if limit)
 	def place_order(self, **kwargs):
-		print('place future order')
 		PATH = '/api/futures/v3/order'
 
 		#vairable redeclare

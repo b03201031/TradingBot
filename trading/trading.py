@@ -1,56 +1,14 @@
-from api.rest import OKCoinFuture, OKCoinSpot
-from api import hedge as hedge_action
+from ..api.rest import OKCoinFuture, OKCoinSpot
+from ..api import hedge as hedge_action
 
-from position import hedge as hedge_position
+from ..position import hedge as hedge_position
 from robot import Robot
-from strategy.hedge import Hedge  as hedge_strategy
+from ..strategy.hedge import Hedge  as hedge_strategy
 
 import time
 
-AUTH = {
-	'APIKEY':  "61de5afb-aa3d-4ab7-a383-083417c4e088",
-	'SECRETKEY': 'CEBE96B1903083EBBD8880EFE8F99484',
-	'PASSPHRASE': "jj12345678",
-}
 
-URL = 'https://www.okex.com'
-
-
-#crypt base
-FutureOrderConfig = {
-	'OrderType': 'market',
-	'Pair': 'ETH-USD-181228',
-	'Currency': 'ETH',
-	'Leverage': '10',
-}
-
-
-#crypt base
-SpotOrderConfig = {
-	'OrderType': 'market',
-	'Pair': 'eth-usdt',
-	'MarginTrade': 'True',
-	'Currency': 'ETH',
-
-}
-
-
-StrategyConfig = {
-	'OpenThreshold': 0.7*0.01,
-	'CloseThreshold': 0.03*0.01,
-	'Fee': 0.15*0.01,
-}
-
-ActionManagerConfig = {
-	'FutureBalanceThreshold': 0.45,
-	'MarginRiskThreshold': 1.6,
-}
-
-
-RobotConfig = {
-	'TradeUnitFiat': 10,
-}
-def main():
+def trading():
 	#declare api
 	spot_api = OKCoinSpot(AUTH, URL, SpotOrderConfig)
 	future_api = OKCoinFuture(AUTH, URL, FutureOrderConfig)
@@ -111,7 +69,3 @@ def main():
 
 		except:
 			pass
-
-
-if __name__ == '__main__':
-	main()

@@ -34,7 +34,7 @@ class Hedge(strategy):
 		cost_spot_price = float(kwargs['cost']['spot_price'])
 
 		target_future_price = float(kwargs['target']['future_price'])
-		target_spot_price = float(kwargs['target']['future_price'])
+		target_spot_price = float(kwargs['target']['spot_price'])
 
 		#short future
 		if cost_future_price > cost_spot_price:
@@ -49,7 +49,7 @@ class Hedge(strategy):
 			return -999
 		cost = cost_future_price + cost_spot_price
 
-		return profit / cost
+		return profit / cost - float(self._config['Fee'])
 
 
 	#input target
@@ -70,8 +70,10 @@ class Hedge(strategy):
 		cost = kwargs['cost']
 		profit_rate = self.calc_profit_rate(target=target, cost=cost)
 
-		print('(close_signal)The spread is: ', spread)
+		print('(close_signal)The profit is: ', profit_rate*100., '%')
 		if profit_rate >= self._config['CloseThreshold']:
+			print('cost: ', cost)
+			print('target: ', target)
 			return 'close'
 		else:
 			return 'wait'

@@ -4,11 +4,11 @@ from .position import Position as position_parent
 class Manager(manager_parent):
 
 	def show_list(self):
-		for key, position in self._position_list.items():
+		for position in self._position_list:
 			print('position_manager(show_list)')
 			print('id: ', position.id)
-			print('\nfuture:\n', position.future)
-			print('margin:\n', position.margin)
+			print('future:', position.future['price'])
+			print('margin:', position.margin['price'])
 		return True
 
 	def write_list(self):

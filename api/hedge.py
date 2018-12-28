@@ -34,11 +34,6 @@ class Manager:
 			print('cancel future order')
 
 			r = future_api.cancel_order(order_id).json()
-			
-			while not r['result']:
-				print('cancel order fail, try again')
-				time.sleep(0.5)
-				r = future_api.cancel_order(order_id).json()
 
 
 			return False
@@ -69,7 +64,7 @@ class Manager:
 			return detail
 
 		else:
-			time.sleep(1)
+			time.sleep(0.2)
 			print('not filled yet')
 			return self.check_margin_filled(**kwargs)
 
@@ -77,11 +72,11 @@ class Manager:
 	def future_transaction(self, **kwargs):
 		future_api = self._future_api
 		order_args = kwargs['order_args']
-		print(order_args)
+		
 		print('\nplace future order')
 		r = future_api.place_order(**order_args).json()
 		
-		time.sleep(2)
+
 		#fail place again
 		if str(r['order_id']) == '-1':
 			print('palce future order failed')
@@ -98,7 +93,7 @@ class Manager:
 		print('\nplace margin order')
 		r = spot_api.place_order(**order_args).json()
 
-		time.sleep(1)
+		time.sleep(0.2)
 
 		if bool(r['result']):
 			order_id = r['order_id']
@@ -168,10 +163,13 @@ class Manager:
 
 		#input future_detail, margin_detail
 	def close(self, **kwargs):
-		future_position_detail = kwargs['position'].future
-		margin_position_detail = kwargs['position'].margin
+		selected_position = kwargs['position']
+		future_position_detail = selected_position.future
+		margin_position_detail = selected_position.margin
 
-		spot_price = float(kwargs['spot_price'])
+
+
+		spot_price = float(kwargs['target']['spot_price'])
 
 		future_order_args = {
 			'side': 'close',
@@ -223,13 +221,24 @@ class Manager:
 
 
 		margin_target_key = 'currency:{}'.format(self._spot_api._order_config['Currency'])
-		margin_r = self._spot_api.get_margin_account().json()[margin_target_key]
-		margin_avail_balance = float(margin_r['available'])
+		margin_r = self._spot_api.get_margin_account().json()
 
-		future_threshold = float(self._config['FutureThreshold'])
-		margin_threshold = float(self._config['MarginThreshold'])
+		if margin_r['risk_rate'] == '':
+			spot_margin_risk_rate = 999
+		else:
+			spot_margin_risk_rate = float(margin_r['risk_rate'])
 
-		if future_avail_balance >= future_threshold and margin_avail_balance >= margin_threshold:
+
+		future_threshold = float(self._config['FutureBalanceThreshold'])
+		margin_threshold = float(self._config['MarginRiskThreshold'])
+
+
+		print('(position_manager)future available balance:', future_avail_balance)
+		print('(position_manager)margin risk rate:', spot_margin_risk_rate)
+			
+		if future_avail_balance >= future_threshold and spot_margin_risk_rate >= margin_threshold:
+			print('(position_manager)safe')
 			return True
 		else:
+			print('(position_manager)not safe')
 			return False
