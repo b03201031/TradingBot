@@ -1,0 +1,3 @@
+class Position(object):
+	pass
+
