@@ -1,3 +1,0 @@
-class Position(object):
-	pass
-
